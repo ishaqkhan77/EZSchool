@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Wirechat\Wirechat\Traits\InteractsWithWireChat;
+use Wirechat\Wirechat\Traits\InteractsWithWirechat;;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 use Wirechat\Wirechat\Contracts\WirechatUser;
@@ -22,7 +22,7 @@ use App\Services\ChatAccessService;
 class User extends Authenticatable implements FilamentUser, HasTenants, HasDefaultTenant, WirechatUser
 {
     use HasRoles;
-    use InteractsWithWireChat {
+    use InteractsWithWirechat {
         createConversationWith as private createWirechatConversationWith;
         belongsToConversation as private belongsToWirechatConversation;
     }
