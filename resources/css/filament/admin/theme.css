@@ -1,0 +1,8 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../../../../vendor/wirechat/wirechat/resources/css/app.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../resources/views/vendor/wirechat/**/*.blade.php';
+@source '../../../../vendor/wirechat/wirechat/resources/views/**/*.blade.php';
+@source '../../../../vendor/wirechat/wirechat/src/Livewire/**/*.php';
