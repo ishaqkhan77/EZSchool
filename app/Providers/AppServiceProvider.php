@@ -9,6 +9,7 @@ use App\Livewire\Wirechat\Chats as AppChats;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         $this->app->booted(function (): void {
             Livewire::component('wirechat.chats', AppChats::class);
             Livewire::component('wirechat.chat', AppChat::class);
