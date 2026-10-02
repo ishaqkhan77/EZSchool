@@ -1,0 +1,12 @@
+{
+  "phases": {
+    "build": {
+      "cmds": [
+        "composer install --optimize-autoloader --no-interaction",
+        "npm install",
+        "npm run build"
+      ]
+    }
+  }
+}
+
