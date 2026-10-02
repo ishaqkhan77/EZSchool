@@ -11,26 +11,57 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->foreignUuid('branch_id')->nullable()->constrained()->onDelete('cascade');
+        foreach (Schema::getForeignKeys('roles') as $foreignKey) {
+            if (in_array('branch_id', $foreignKey['columns'], true)) {
+                Schema::table('roles', function (Blueprint $table) use ($foreignKey) {
+                    $table->dropForeign($foreignKey['name']);
+                });
+            }
+        }
 
-            $indexes = Schema::getIndexes('roles');
-            $indexNames = array_column($indexes, 'name');
+        if (Schema::hasColumn('roles', 'branch_id')) {
+            foreach (Schema::getIndexes('roles') as $index) {
+                if (! in_array('branch_id', $index['columns'], true)) {
+                    continue;
+                }
 
-            if (in_array('roles_name_guard_name_unique', $indexNames)) {
-                $table->dropUnique('roles_name_guard_name_unique');
+                Schema::table('roles', function (Blueprint $table) use ($index) {
+                    if ($index['primary']) {
+                        $table->dropPrimary($index['name']);
+                    } elseif ($index['unique']) {
+                        $table->dropUnique($index['name']);
+                    } else {
+                        $table->dropIndex($index['name']);
+                    }
+                });
             }
 
+            Schema::table('roles', function (Blueprint $table) {
+                $table->dropColumn('branch_id');
+            });
+        }
+
+        $indexes = Schema::getIndexes('roles');
+        foreach ($indexes as $index) {
+            if ($index['unique'] && $index['columns'] === ['name', 'guard_name']) {
+                Schema::table('roles', function (Blueprint $table) use ($index) {
+                    $table->dropUnique($index['name']);
+                });
+            }
+        }
+
+        Schema::table('roles', function (Blueprint $table) {
+            $table->foreignUuid('branch_id')->nullable()->constrained()->onDelete('cascade');
             $table->unique(['name', 'guard_name', 'branch_id'], 'roles_branch_unique');
         });
 
-        Schema::table('model_has_roles', function (Blueprint $table) {
-            $table->renameColumn('team_id', 'branch_id');
-        });
-
-        Schema::table('model_has_permissions', function (Blueprint $table) {
-            $table->renameColumn('team_id', 'branch_id');
-        });
+        foreach (['model_has_roles', 'model_has_permissions'] as $tableName) {
+            if (Schema::hasColumn($tableName, 'team_id') && ! Schema::hasColumn($tableName, 'branch_id')) {
+                Schema::table($tableName, function (Blueprint $table) {
+                    $table->renameColumn('team_id', 'branch_id');
+                });
+            }
+        }
     }
 
     /**

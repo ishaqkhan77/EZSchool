@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->dropUnique('roles_team_id_name_guard_name_unique');
-        });
+        $indexNames = array_column(Schema::getIndexes('roles'), 'name');
+
+        if (in_array('roles_team_id_name_guard_name_unique', $indexNames, true)) {
+            Schema::table('roles', function (Blueprint $table) {
+                $table->dropUnique('roles_team_id_name_guard_name_unique');
+            });
+        }
     }
 
     /**
